@@ -19,7 +19,13 @@ $(function() {
                 '<td>' + resposta[i].nome + '</td>' + 
                 '<td>' + resposta[i].cor + '</td>' + 
                 '<td>' + resposta[i].ano + '</td>' + 
+                '<td><a href=# id="excluir_' + resposta[i].id + '" ' + 
+                  'class="excluir_carro"><img src="imagens/delete.png" '+
+                  'alt="Excluir carro" title="Excluir carro"></a>' + 
+                '</td>' + 
                 '</tr>';
+                
+                ;
                 $('#corpoTabelaCarros').append(lin);
             }
         }
@@ -82,6 +88,31 @@ $('#modalIncluirCarro').on('hide.bs.modal', function (e) {
 });
 
 mostrar_conteudo("conteudoInicial");
+
+$(document).on("click", ".excluir_carro", function() { 
+        var componente_clicado = $(this).attr('id'); 
+        var nome_icone = "excluir_"; 
+        var id_carro = componente_clicado.substring(nome_icone.length); 
+        $.ajax({ 
+            url: 'http://localhost:5000/excluir_carro/'+id_carro, 
+            type: 'delete',
+            dataType: 'json', 
+            success: carroExcluido,
+            error: erroAoExcluir 
+        });
+        function carroExcluido(retorno) {
+            if (retorno.resultado == "ok") {
+                $("#linha_" + id_carro).fadeOut(1000, function() {
+                    alert("Carro removido com sucesso!");
+                });
+            } else {
+                alert(retorno.resultado + ":" + retorno.detalhes);
+            }
+        }
+        function erroAoExcluir(retorno) {
+            alert("Erro ao excluir dados, verifique o backend: ");
+        }
+    });
 });
 
 
